@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -53,9 +51,6 @@ func (user *User) CheckPassword(password string) bool {
 
 // 创建用户
 func (user *User) Create() error {
-	if user.Account == "" || user.PasswordDigest == "" {
-		return fmt.Errorf("account or password is empty")
-	}
 	err := DB.Create(user).Error
 	return err
 }

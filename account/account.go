@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"log"
+	"fmt"
 
 	"github.com/wethedevelop/account/model"
 	pb "github.com/wethedevelop/proto/auth"
@@ -15,14 +15,17 @@ type AccountServer struct {
 
 // Signup 是我们的注册服务
 func (s *AccountServer) Signup(ctx context.Context, in *pb.SignupRequest) (*pb.User, error) {
-	log.Printf("Received: %s - %s", in.GetAccount(), in.GetPassword())
-
 	account := in.GetAccount()
 	password := in.GetPassword()
+	if account == "" || password == "" {
+		return nil, fmt.Errorf("account or password is empty")
+	}
 	user := model.User{
 		Account: account,
 	}
-	user.SetPassword(password)
+	if err := user.SetPassword(password); err != nil {
+		return nil, err
+	}
 	err := user.Create()
 	if err != nil {
 		return nil, err
