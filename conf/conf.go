@@ -6,6 +6,7 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/wethedevelop/account/model"
+	"github.com/wethedevelop/account/util"
 )
 
 // 初始化配置和链接数据库等操作
@@ -21,5 +22,6 @@ func Init() {
 		os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_DB_NAME"),
 	)
+	util.Log().Debug("dsn: %s", dsn)
 	model.Database(dsn)
 }
