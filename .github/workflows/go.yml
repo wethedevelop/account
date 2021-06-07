@@ -1,0 +1,46 @@
+name: Go
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  myci:
+    runs-on: ubuntu-latest
+    env:
+      GO111MODULE: on
+      MYSQL_HOST: "127.0.0.1"
+      MYSQL_PORT: "3306"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: ""
+      MYSQL_DB_NAME: "wethedevelop_account"
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v2
+      with:
+        version: v1.29
+
+    - name: Run Gosec Security Scanner
+      run: |
+        export PATH=$PATH:$(go env GOPATH)/bin
+        go get github.com/securego/gosec/cmd/gosec
+        gosec ./...
+
+    - uses: mirromutth/mysql-action@v1.1
+      with:
+        mysql database: ${{ env.MYSQL_DB_NAME }}
+        
+    - name: Test
+      run: go test -v ./test/...
+

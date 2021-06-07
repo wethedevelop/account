@@ -15,11 +15,11 @@ func Init() {
 	// 连接数据库
 	dsn := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		os.Getenv("KAE_MYSQL_USER"),
-		os.Getenv("KAE_MYSQL_PASSWORD"),
-		os.Getenv("KAE_MYSQL_HOST"),
-		os.Getenv("KAE_MYSQL_PORT"),
-		os.Getenv("KAE_MYSQL_DB_NAME"),
+		os.Getenv("MYSQL_USER"),
+		os.Getenv("MYSQL_PASSWORD"),
+		os.Getenv("MYSQL_HOST"),
+		os.Getenv("MYSQL_PORT"),
+		os.Getenv("MYSQL_DB_NAME"),
 	)
 	model.Database(dsn)
 }
