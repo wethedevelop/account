@@ -13,7 +13,7 @@ jobs:
       MYSQL_HOST: "127.0.0.1"
       MYSQL_PORT: "3306"
       MYSQL_USER: "root"
-      MYSQL_PASSWORD: ""
+      MYSQL_PASSWORD: "z55HrAODZMIq"
       MYSQL_DB_NAME: "wethedevelop_account"
     steps:
     - uses: actions/checkout@v2
@@ -39,7 +39,8 @@ jobs:
     - uses: mirromutth/mysql-action@v1.1
       with:
         mysql database: ${{ env.MYSQL_DB_NAME }}
-        
+        mysql root password: ${{ env.MYSQL_PASSWORD }}
+
     - name: Test
       run: go test -v ./test/...
 
