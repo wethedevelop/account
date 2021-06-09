@@ -118,7 +118,15 @@ func (s *AccountServer) Update(context context.Context, in *pb.UpdateRequest) (*
 	return serializer.BuildUser(*user), nil
 }
 
-// 通过用户ID获取用户资料
-func (s *AccountServer) GetUser(context.Context, *pb.GetUserRequest) (*pb.User, error) {
-	return &pb.User{}, nil
+// 特权：通过用户ID获取用户资料
+func (s *AccountServer) DevGetUser(context context.Context, in *pb.GetUserRequest) (*pb.User, error) {
+	user, err := model.GetUser(in.Id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Error(codes.NotFound, "NotFound")
+		} else {
+			return nil, status.Error(codes.Internal, err.Error())
+		}
+	}
+	return serializer.BuildUser(user), nil
 }

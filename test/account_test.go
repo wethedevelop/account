@@ -193,3 +193,32 @@ func TestUpdateUser(t *testing.T) {
 		t.Fatalf("User Update failed: %v", user)
 	}
 }
+
+// 账号资料更新接口
+func TestGetUser(t *testing.T) {
+	ctx := context.Background()
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial bufnet: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewAccountAuthClient(conn)
+	account := util.RandStringRunes(10)
+	password := util.RandStringRunes(10)
+	// 正常注册
+	rsp, err := client.Signup(ctx, &pb.SignupRequest{Account: account, Password: password})
+	if err != nil {
+		t.Fatalf("Signup failed: %v", err)
+	}
+	if rsp.Id == 0 {
+		t.Fatalf("Signup failed: %v", rsp)
+	}
+	// 修改昵称
+	user, err := client.DevGetUser(ctx, &pb.GetUserRequest{Id: rsp.Id})
+	if err != nil {
+		t.Fatalf("DevGetUser failed: %v", err)
+	}
+	if user.Nickname != rsp.Nickname {
+		t.Fatalf("DevGetUser failed: %v", user)
+	}
+}
