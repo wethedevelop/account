@@ -120,7 +120,7 @@ func TestSignin(t *testing.T) {
 		t.Fatalf("ACCOUNT_OR_PWD_NOT_MATCH should not success %v", token)
 	} else {
 		e, ok := status.FromError(err)
-		if !ok || e.Code() != codes.PermissionDenied || e.Message() != serializer.ACCOUNT_OR_PWD_NOT_MATCH {
+		if !ok || e.Code() != codes.PermissionDenied || e.Message() != serializer.ACCOUNT_OR_PW_NOT_MATCH {
 			t.Fatalf("ACCOUNT_OR_PWD_NOT_MATCH should not success: %v", err)
 		}
 	}

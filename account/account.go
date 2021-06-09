@@ -75,13 +75,13 @@ func (s *AccountServer) Signin(context context.Context, in *pb.SigninRequest) (*
 	var user model.User
 	if err := model.DB.Where("account = ?", account).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, status.Error(codes.PermissionDenied, serializer.ACCOUNT_OR_PWD_NOT_MATCH)
+			return nil, status.Error(codes.PermissionDenied, serializer.ACCOUNT_OR_PW_NOT_MATCH)
 		} else {
 			return nil, status.Error(codes.Internal, err.Error())
 		}
 	}
 	if !user.CheckPassword(password) {
-		return nil, status.Error(codes.PermissionDenied, serializer.ACCOUNT_OR_PWD_NOT_MATCH)
+		return nil, status.Error(codes.PermissionDenied, serializer.ACCOUNT_OR_PW_NOT_MATCH)
 	}
 
 	token, tokenExpire, err := user.MakeToken()
