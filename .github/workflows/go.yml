@@ -47,7 +47,7 @@ jobs:
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "z55HrAODZMIq"
       MYSQL_DB_NAME: "wethedevelop_account"
-      REDIS_ADDR: "redis:6379"
+      REDIS_ADDR: "127.0.0.1:6379"
     steps:
     - uses: actions/checkout@v2
 
@@ -61,6 +61,10 @@ jobs:
       with:
         go-version: 1.16
 
+    - name: Start Redis
+      uses: supercharge/redis-github-action@1.2.0
+      with:
+        redis-version: 6
     - name: Build
       run: go build -v ./...
   
