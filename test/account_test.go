@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 	"testing"
@@ -22,6 +23,11 @@ const bufSize = 1024 * 1024
 var lis *bufconn.Listener
 
 func init() {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
 	// 连接数据库
 	conf.Init()
 
