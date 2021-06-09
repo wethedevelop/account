@@ -43,7 +43,7 @@ func (s *AccountServer) Signup(context context.Context, in *pb.SignupRequest) (*
 	password := in.GetPassword()
 	// 不允许为空
 	if account == "" || password == "" {
-		return nil, status.Error(codes.InvalidArgument, serializer.ACCOUNT_OR_PWD_EMPTY)
+		return nil, status.Error(codes.InvalidArgument, serializer.ACCOUNT_OR_PW_EMPTY)
 	}
 	// 检测重名
 	checked, err := model.CheckRegistered(account)

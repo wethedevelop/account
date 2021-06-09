@@ -2,7 +2,7 @@ package serializer
 
 const (
 	// 账号或密码为空
-	ACCOUNT_OR_PWD_EMPTY = "ACCOUNT_OR_PWD_EMPTY"
+	ACCOUNT_OR_PW_EMPTY = "ACCOUNT_OR_PW_EMPTY"
 	// 已经被注册
 	ACCOUNT_REGISTERED = "ACCOUNT_REGISTERED"
 	// 账号或密码错误

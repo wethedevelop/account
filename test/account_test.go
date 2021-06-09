@@ -63,7 +63,7 @@ func TestSignUp(t *testing.T) {
 		t.Fatalf("Signup Password empty should not success %v", rsp)
 	} else {
 		e, ok := status.FromError(err)
-		if !ok || e.Code() != codes.InvalidArgument || e.Message() != serializer.ACCOUNT_OR_PWD_EMPTY {
+		if !ok || e.Code() != codes.InvalidArgument || e.Message() != serializer.ACCOUNT_OR_PW_EMPTY {
 			t.Fatalf("Signup Password empty should not success: %v", err)
 		}
 	}
