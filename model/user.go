@@ -1,6 +1,11 @@
 package model
 
 import (
+	"strconv"
+	"time"
+
+	"github.com/wethedevelop/account/cache"
+	"github.com/wethedevelop/account/util"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -53,4 +58,34 @@ func (user *User) CheckPassword(password string) bool {
 func (user *User) Create() error {
 	err := DB.Create(user).Error
 	return err
+}
+
+// 保存
+func (item *User) Save() error {
+	err := DB.Save(item).Error
+	return err
+}
+
+// UserID 返回string版的uid
+func (user *User) UserID() string {
+	return strconv.Itoa(int(user.ID))
+}
+
+// MakeToken 生成token
+func (user *User) MakeToken() (string, int64, error) {
+	// 移动端生成token, 2周自动过期
+	token := util.RandStringRunes(15)
+	exp := 14 * 24 * time.Hour
+	tokenExpire := time.Now().Add(exp).Unix()
+	if err := cache.SaveUserToken(token, user.UserID(), exp); err != nil {
+		return "", 0, err
+	}
+	return token, tokenExpire, nil
+}
+
+// CheckRegistered 同用户名检测
+func CheckRegistered(account string) (bool, error) {
+	var count int64 = 0
+	err := DB.Model(&User{}).Where("account = ?", account).Count(&count).Error
+	return count > 0, err
 }

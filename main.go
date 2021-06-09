@@ -4,7 +4,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/wethedevelop/account/account"
+	accountSrv "github.com/wethedevelop/account/account"
 	"github.com/wethedevelop/account/conf"
 	pb "github.com/wethedevelop/proto/auth"
 	"google.golang.org/grpc"
@@ -22,7 +22,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterAccountAuthServer(s, &account.AccountServer{})
+	pb.RegisterAccountAuthServer(s, &accountSrv.AccountServer{})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

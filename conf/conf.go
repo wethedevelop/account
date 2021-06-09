@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/wethedevelop/account/cache"
 	"github.com/wethedevelop/account/model"
 )
 
@@ -21,6 +22,6 @@ func Init() {
 		os.Getenv("MYSQL_PORT"),
 		os.Getenv("MYSQL_DB_NAME"),
 	)
-	// util.Log().Debug("dsn: %s", dsn)
 	model.Database(dsn)
+	cache.Redis()
 }
