@@ -26,6 +26,20 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
       GO111MODULE: on
       MYSQL_HOST: "127.0.0.1"
@@ -33,6 +47,7 @@ jobs:
       MYSQL_USER: "root"
       MYSQL_PASSWORD: "z55HrAODZMIq"
       MYSQL_DB_NAME: "wethedevelop_account"
+      REDIS_ADDR: "redis:6379"
     steps:
     - uses: actions/checkout@v2
 
