@@ -60,6 +60,12 @@ func (user *User) Create() error {
 	return err
 }
 
+// 保存
+func (item *User) Save() error {
+	err := DB.Save(item).Error
+	return err
+}
+
 // UserID 返回string版的uid
 func (user *User) UserID() string {
 	return strconv.Itoa(int(user.ID))

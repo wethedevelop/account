@@ -8,6 +8,7 @@ import (
 
 	accountSrv "github.com/wethedevelop/account/account"
 	"github.com/wethedevelop/account/conf"
+	"github.com/wethedevelop/account/serializer"
 	"github.com/wethedevelop/account/util"
 	pb "github.com/wethedevelop/proto/auth"
 	"google.golang.org/grpc"
@@ -56,7 +57,7 @@ func TestSignUp(t *testing.T) {
 		t.Fatalf("Signup Password empty should not success %v", rsp)
 	} else {
 		e, ok := status.FromError(err)
-		if !ok || e.Code() != codes.InvalidArgument || e.Message() != accountSrv.ACCOUNT_OR_PWD_EMPTY {
+		if !ok || e.Code() != codes.InvalidArgument || e.Message() != serializer.ACCOUNT_OR_PWD_EMPTY {
 			t.Fatalf("Signup Password empty should not success: %v", err)
 		}
 	}
@@ -74,7 +75,7 @@ func TestSignUp(t *testing.T) {
 		t.Fatalf("ACCOUNT_REGISTERED should not success %v", rsp)
 	} else {
 		e, ok := status.FromError(err)
-		if !ok || e.Code() != codes.InvalidArgument || e.Message() != accountSrv.ACCOUNT_REGISTERED {
+		if !ok || e.Code() != codes.InvalidArgument || e.Message() != serializer.ACCOUNT_REGISTERED {
 			t.Fatalf("ACCOUNT_REGISTERED should not success: %v", rsp)
 		}
 	}
@@ -113,8 +114,82 @@ func TestSignin(t *testing.T) {
 		t.Fatalf("ACCOUNT_OR_PWD_NOT_MATCH should not success %v", token)
 	} else {
 		e, ok := status.FromError(err)
-		if !ok || e.Code() != codes.PermissionDenied || e.Message() != accountSrv.ACCOUNT_OR_PWD_NOT_MATCH {
+		if !ok || e.Code() != codes.PermissionDenied || e.Message() != serializer.ACCOUNT_OR_PWD_NOT_MATCH {
 			t.Fatalf("ACCOUNT_OR_PWD_NOT_MATCH should not success: %v", err)
 		}
+	}
+}
+
+// 获取当前用户身份接口
+func TestCheckUser(t *testing.T) {
+	ctx := context.Background()
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial bufnet: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewAccountAuthClient(conn)
+	account := util.RandStringRunes(10)
+	password := util.RandStringRunes(10)
+	// 正常注册
+	rsp, err := client.Signup(ctx, &pb.SignupRequest{Account: account, Password: password})
+	if err != nil {
+		t.Fatalf("Signup failed: %v", err)
+	}
+	if rsp.Id == 0 {
+		t.Fatalf("Signup failed: %v", rsp)
+	}
+	// 正常登录
+	token, err := client.Signin(ctx, &pb.SigninRequest{Account: account, Password: password})
+	if err != nil {
+		t.Fatalf("Signin failed: %v", err)
+	}
+	if token.Token == "" || token.TokenExpire == 0 {
+		t.Fatalf("Signin failed: %v", token)
+	}
+	user, err := client.Check(ctx, &pb.TokenRequest{Token: token.Token})
+	if err != nil {
+		t.Fatalf("User Check failed: %v", err)
+	}
+	if user.Id == 0 {
+		t.Fatalf("User Check failed: %v", user)
+	}
+}
+
+// 账号资料更新接口
+func TestUpdateUser(t *testing.T) {
+	ctx := context.Background()
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial bufnet: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewAccountAuthClient(conn)
+	account := util.RandStringRunes(10)
+	password := util.RandStringRunes(10)
+	// 正常注册
+	rsp, err := client.Signup(ctx, &pb.SignupRequest{Account: account, Password: password})
+	if err != nil {
+		t.Fatalf("Signup failed: %v", err)
+	}
+	if rsp.Id == 0 {
+		t.Fatalf("Signup failed: %v", rsp)
+	}
+	// 正常登录
+	token, err := client.Signin(ctx, &pb.SigninRequest{Account: account, Password: password})
+	if err != nil {
+		t.Fatalf("Signin failed: %v", err)
+	}
+	if token.Token == "" || token.TokenExpire == 0 {
+		t.Fatalf("Signin failed: %v", token)
+	}
+	name := util.RandStringRunes(10)
+	// 修改昵称
+	user, err := client.Update(ctx, &pb.UpdateRequest{Token: token.Token, Nickname: name})
+	if err != nil {
+		t.Fatalf("User Update failed: %v", err)
+	}
+	if user.Nickname != name {
+		t.Fatalf("User Update failed: %v", user)
 	}
 }
