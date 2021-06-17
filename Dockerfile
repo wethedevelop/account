@@ -11,9 +11,11 @@ FROM alpine:3.7
 ENV REDIS_ADDR=""
 ENV REDIS_PW=""
 ENV REDIS_DB=""
-ENV MysqlDSN=""
-ENV GIN_MODE="release"
-ENV PORT=3000
+ENV MYSQL_HOST=""
+ENV MYSQL_PORT=""
+ENV MYSQL_USER=""
+ENV MYSQL_PASSWORD=""
+ENV MYSQL_DB_NAME=""
 
 RUN echo "http://mirrors.aliyun.com/alpine/v3.7/main/" > /etc/apk/repositories && \
     apk update && \
